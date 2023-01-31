@@ -24,6 +24,7 @@ import {
   IncreasePaidStorageParams,
   UpdateConsensusKeyParams,
   SmartRollupAddMessagesParams,
+  SmartRollupOriginateParams,
 } from '../operations/types';
 import { Estimate, EstimateProperties } from './estimate';
 import { EstimationProvider } from '../estimate/estimate-provider-interface';
@@ -40,6 +41,7 @@ import {
   createIncreasePaidStorageOperation,
   createUpdateConsensusKeyOperation,
   createSmartRollupAddMessagesOperation,
+  createSmartRollupOriginateOperation,
 } from '../contract/prepare';
 import {
   validateAddress,
@@ -166,6 +168,9 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
           : 0;
       totalStorage += 'originated_rollup' in result ? tx_rollup_origination_size : 0;
     });
+
+    totalStorage +=
+      content.kind === OpKind.SMART_ROLLUP_ORIGINATE ? Number(content.storage_limit) : 0;
 
     if (isOpWithFee(content)) {
       return {
@@ -463,7 +468,7 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
           );
           break;
         default:
-          throw new InvalidOperationKindError((params as any).kind);
+          throw new InvalidOperationKindError(param.kind);
       }
     }
     const isRevealNeeded = await this.isRevealOpNeeded(operations, publicKeyHash);
@@ -719,7 +724,42 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
       protocolConstants,
       pkh
     );
+    if (isRevealNeeded) {
+      estimateProperties.shift();
+    }
+    return Estimate.createEstimateInstanceFromProperties(estimateProperties);
+  }
+  /**
+   *
+   * @description Estimate gasLimit, storageLimit and fees for an Smart Rollup Originate operation
+   *
+   * @returns An estimation of gasLimit, storageLimit and fees for the operation
+   *
+   * @param SmartRollupOrigianteParams
+   */
+  async smartRollupOriginate(params: SmartRollupOriginateParams) {
+    const { fee, storageLimit, gasLimit, ...rest } = params;
+    const pkh = (await this.getKeys()).publicKeyHash;
+    const protocolConstants = await this.context.readProvider.getProtocolConstants('head');
 
+    const originationProof = await this.rpc.getOriginationProof({
+      kind: params.pvmKind,
+      kernel: params.kernel,
+    });
+    const completeRest = { ...rest, originationProof };
+
+    const DEFAULT_PARAMS = await this.getAccountLimits(pkh, protocolConstants);
+    const op = await createSmartRollupOriginateOperation({
+      ...completeRest,
+      ...mergeLimits({ fee, storageLimit, gasLimit }, DEFAULT_PARAMS),
+    });
+    const isRevealNeeded = await this.isRevealOpNeeded([op], pkh);
+    const ops = isRevealNeeded ? await this.addRevealOp([op], pkh) : op;
+    const estimateProperties = await this.prepareEstimate(
+      { operation: ops, source: pkh },
+      protocolConstants,
+      pkh
+    );
     if (isRevealNeeded) {
       estimateProperties.shift();
     }
