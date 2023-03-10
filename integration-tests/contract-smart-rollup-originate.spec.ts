@@ -6,7 +6,7 @@ CONFIGS().forEach(({ lib, rpc, setup, protocol  }) => {
   const Tezos = lib;
   describe(`Test smart rollup originate with rpc: ${rpc}`, () => {
 
-    const mondayAndAlpha = protocol === Protocols.PtMumbaii || protocol === Protocols.ProtoALpha ? it : it.skip;
+    const mondayAndAlpha = protocol === Protocols.PtMumbai2 || protocol === Protocols.ProtoALpha ? it : it.skip;
 
     beforeEach(async (done) => {
       await setup(true)
