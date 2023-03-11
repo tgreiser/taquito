@@ -65,7 +65,8 @@ const sidebars = {
         'wallets',
         'web3js_taquito',
         'subscribe_event',
-        'smart_rollups'
+        'smart_rollups',
+        'taquito_conversion_helper_functions'
       ],
     },
     {
