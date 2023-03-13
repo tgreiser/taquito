@@ -15,7 +15,7 @@ import {
 
 /**
  *
- * @description SmartRollupOriginateOperation provides utility to fetch properties for Operation of kind UpdateConsensusKey
+ * @description SmartRollupOriginate Operation provides utility to fetch properties for Operation of kind UpdateConsensusKey
  *
  */
 export class SmartRollupOriginateOperation
