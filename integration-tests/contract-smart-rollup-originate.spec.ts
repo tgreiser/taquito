@@ -1,6 +1,6 @@
 import { PvmKind } from "@taquito/rpc";
 import { Protocols } from "@taquito/taquito";
-import { CONFIGS,  } from "./config";
+import { CONFIGS } from "./config";
 
 CONFIGS().forEach(({ lib, rpc, setup, protocol  }) => {
   const Tezos = lib;
