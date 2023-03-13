@@ -128,7 +128,7 @@ export interface RpcClientInterface {
     options?: RPCOptions
   ): Promise<string>;
   getAllTicketBalances(contract: string, options?: RPCOptions): Promise<AllTicketBalances>;
-  getOriginationProof(reqs: OriginationProofParams, options?: RPCOptions): Promise<string>;
+  getOriginationProof(params: OriginationProofParams, options?: RPCOptions): Promise<string>;
 }
 
 export enum RPCMethodName {

@@ -323,9 +323,9 @@ export class RpcWrapperContractsLibrary implements RpcClientInterface {
     return this.rpc.getAllTicketBalances(contract, { block });
   }
   async getOriginationProof(
-    reqs: OriginationProofParams,
+    params: OriginationProofParams,
     { block }: RPCOptions = defaultRPCOptions
   ): Promise<string> {
-    return this.rpc.getOriginationProof(reqs, { block });
+    return this.rpc.getOriginationProof(params, { block });
   }
 }
