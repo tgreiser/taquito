@@ -148,7 +148,8 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
     content: PreapplyResponse['contents'][0],
     size: number,
     costPerByte: BigNumber,
-    tx_rollup_origination_size: number
+    tx_rollup_origination_size: number,
+    smart_rollup_origination_size: number
   ): EstimateProperties {
     const operationResults = flattenOperationResult({ contents: [content] });
     let totalMilligas = 0;
@@ -170,7 +171,7 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
     });
 
     totalStorage +=
-      content.kind === OpKind.SMART_ROLLUP_ORIGINATE ? Number(content.storage_limit) : 0;
+      content.kind === 'smart_rollup_originate' ? Number(smart_rollup_origination_size) + 300 : 0;
 
     if (isOpWithFee(content)) {
       return {
@@ -192,7 +193,10 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
 
   private async prepareEstimate(
     params: PrepareOperationParams,
-    constants: Pick<ConstantsResponse, 'cost_per_byte' | 'tx_rollup_origination_size'>,
+    constants: Pick<
+      ConstantsResponse,
+      'cost_per_byte' | 'tx_rollup_origination_size' | 'smart_rollup_origination_size'
+    >,
     pkh: string
   ) {
     const prepared = await this.prepareOperation(params, pkh);
@@ -206,7 +210,7 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
     };
 
     const { opResponse } = await this.simulate(operation);
-    const { cost_per_byte, tx_rollup_origination_size } = constants;
+    const { cost_per_byte, tx_rollup_origination_size, smart_rollup_origination_size } = constants;
     const errors = [...flattenErrors(opResponse, 'backtracked'), ...flattenErrors(opResponse)];
 
     // Fail early in case of errors
@@ -228,7 +232,8 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
         // TODO: Calculate a specific opSize for each operation.
         x.kind === 'reveal' ? this.OP_SIZE_REVEAL / 2 : opbytes.length / 2 / numberOfOps,
         cost_per_byte,
-        tx_rollup_origination_size ?? 0
+        tx_rollup_origination_size ?? 0,
+        smart_rollup_origination_size ?? 0
       );
     });
   }
@@ -467,6 +472,20 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
             })
           );
           break;
+        case OpKind.SMART_ROLLUP_ORIGINATE: {
+          const originationProof = await this.rpc.getOriginationProof({
+            kernel: param.kernel,
+            kind: param.pvmKind,
+          });
+          operations.push(
+            await createSmartRollupOriginateOperation({
+              ...param,
+              originationProof,
+              ...mergeLimits(param, DEFAULT_PARAMS),
+            })
+          );
+          break;
+        }
         default:
           throw new InvalidOperationKindError(param.kind);
       }
@@ -735,7 +754,7 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
    *
    * @returns An estimation of gasLimit, storageLimit and fees for the operation
    *
-   * @param SmartRollupOrigianteParams
+   * @param SmartRollupOriginateParams
    */
   async smartRollupOriginate(params: SmartRollupOriginateParams) {
     const { fee, storageLimit, gasLimit, ...rest } = params;
@@ -746,11 +765,11 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
       kind: params.pvmKind,
       kernel: params.kernel,
     });
-    const completeRest = { ...rest, originationProof };
 
     const DEFAULT_PARAMS = await this.getAccountLimits(pkh, protocolConstants);
     const op = await createSmartRollupOriginateOperation({
-      ...completeRest,
+      ...rest,
+      originationProof,
       ...mergeLimits({ fee, storageLimit, gasLimit }, DEFAULT_PARAMS),
     });
     const isRevealNeeded = await this.isRevealOpNeeded([op], pkh);

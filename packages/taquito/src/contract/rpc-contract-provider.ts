@@ -738,39 +738,37 @@ export class RpcContractProvider
    * @description Creates a smart rollup originate operation
    * @param SmartRollupOrigianteParams
    * @returns An operation handle with results from the RPC node
-
    */
-    async smartRollupOriginate(params: SmartRollupOriginateParams) {
-      const publicKeyHash = await this.signer.publicKeyHash();
-      const estimate = await this.estimate(
-        params,
-        this.estimator.smartRollupOriginate.bind(this.estimator)
-      );
-      const originationProof = await this.rpc.getOriginationProof({
-        kind: params.pvmKind,
-        kernel: params.kernel,
-      });
-      const completeParams = { ...params, originationProof };
+  async smartRollupOriginate(params: SmartRollupOriginateParams) {
+    const publicKeyHash = await this.signer.publicKeyHash();
+    const estimate = await this.estimate(
+      params,
+      this.estimator.smartRollupOriginate.bind(this.estimator)
+    );
+    const originationProof = await this.rpc.getOriginationProof({
+      kind: params.pvmKind,
+      kernel: params.kernel,
+    });
+    const completeParams = { ...params, originationProof };
 
-      const operation = await createSmartRollupOriginateOperation({
-        ...completeParams,
-        ...estimate,
-      });
-      const ops = await this.addRevealOperationIfNeeded(operation, publicKeyHash);
-      const prepared = await this.prepareOperation({ operation: ops, source: params.source });
-      const opBytes = await this.forge(prepared);
-      const { hash, context, forgedBytes, opResponse } = await this.signAndInject(opBytes);
+    const operation = await createSmartRollupOriginateOperation({
+      ...completeParams,
+      ...estimate,
+    });
+    const ops = await this.addRevealOperationIfNeeded(operation, publicKeyHash);
+    const prepared = await this.prepareOperation({ operation: ops, source: params.source });
+    const opBytes = await this.forge(prepared);
+    const { hash, context, forgedBytes, opResponse } = await this.signAndInject(opBytes);
 
-      return new SmartRollupOriginateOperation(
-        hash,
-        operation,
-        publicKeyHash,
-        forgedBytes,
-        opResponse,
-        context
-      );
-    }
-
+    return new SmartRollupOriginateOperation(
+      hash,
+      operation,
+      publicKeyHash,
+      forgedBytes,
+      opResponse,
+      context
+    );
+  }
 
   async at<T extends DefaultContractType = DefaultContractType>(
     address: string,

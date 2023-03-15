@@ -1759,6 +1759,13 @@ describe('RPCEstimateProvider test wallet', () => {
 
   describe('smartRollupOriginate', () => {
     it('Should return the correct estimate for SmartRollupOriginate operation', async (done) => {
+      mockRpcClient.getConstants.mockResolvedValue({
+        hard_gas_limit_per_operation: new BigNumber(1040000),
+        hard_storage_limit_per_operation: new BigNumber(60000),
+        hard_gas_limit_per_block: new BigNumber(5200000),
+        cost_per_byte: new BigNumber(1000),
+        smart_rollup_origination_size: new BigNumber(6572),
+      });
       mockRpcClient.runOperation.mockResolvedValue(smartRollupOriginateWithReveal);
       mockRpcClient.getOriginationProof.mockResolvedValue('987654321');
 

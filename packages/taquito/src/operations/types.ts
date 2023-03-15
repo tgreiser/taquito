@@ -24,7 +24,7 @@ export type ParamsWithKind =
   | withKind<TransferTicketParams, OpKind.TRANSFER_TICKET>
   | withKind<UpdateConsensusKeyParams, OpKind.UPDATE_CONSENSUS_KEY>
   | withKind<SmartRollupAddMessagesParams, OpKind.SMART_ROLLUP_ADD_MESSAGES>
-  | withKind<SmartRollupOriginateParams, OpKind.SMART_ROLLUP_ORIGINATE>;
+  | withKind<SmartRollupOriginateParamsWithProof, OpKind.SMART_ROLLUP_ORIGINATE>;
 
 export type ParamsWithKindExtended = ParamsWithKind | withKind<RevealParams, OpKind.REVEAL>;
 
