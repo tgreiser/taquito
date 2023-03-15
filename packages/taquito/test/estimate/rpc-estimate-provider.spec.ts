@@ -1764,7 +1764,7 @@ describe('RPCEstimateProvider test wallet', () => {
         hard_storage_limit_per_operation: new BigNumber(60000),
         hard_gas_limit_per_block: new BigNumber(5200000),
         cost_per_byte: new BigNumber(1000),
-        smart_rollup_origination_size: new BigNumber(6572),
+        smart_rollup_origination_size: new BigNumber(6314),
       });
       mockRpcClient.runOperation.mockResolvedValue(smartRollupOriginateWithReveal);
       mockRpcClient.getOriginationProof.mockResolvedValue('987654321');
@@ -1778,12 +1778,12 @@ describe('RPCEstimateProvider test wallet', () => {
         },
       });
       expect(estimate.gasLimit).toEqual(3849);
-      expect(estimate.storageLimit).toEqual(6572);
+      expect(estimate.storageLimit).toEqual(6552);
       expect(estimate.suggestedFeeMutez).toEqual(651);
 
       expect(estimate).toMatchObject({
         gasLimit: 3849,
-        storageLimit: 6572,
+        storageLimit: 6552,
         suggestedFeeMutez: 651,
         minimalFeeMutez: 551,
       });

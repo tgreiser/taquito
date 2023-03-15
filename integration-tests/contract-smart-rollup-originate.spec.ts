@@ -20,6 +20,7 @@ CONFIGS().forEach(({ lib, rpc, setup, protocol }) => {
         parametersType: { prim: 'bytes' },
 
       });
+
       await op.confirmation();
 
       expect(op.status).toEqual('applied');

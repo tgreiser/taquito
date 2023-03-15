@@ -149,7 +149,7 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
     size: number,
     costPerByte: BigNumber,
     tx_rollup_origination_size: number,
-    smart_rollup_origination_size: number
+    _smart_rollup_origination_size: number //figure out of will be removed or  accurate
   ): EstimateProperties {
     const operationResults = flattenOperationResult({ contents: [content] });
     let totalMilligas = 0;
@@ -171,7 +171,9 @@ export class RPCEstimateProvider extends OperationEmitter implements EstimationP
     });
 
     totalStorage +=
-      content.kind === 'smart_rollup_originate' ? Number(smart_rollup_origination_size) + 300 : 0;
+      content.kind === 'smart_rollup_originate'
+        ? Number((operationResults[0] as unknown as { size: string }).size)
+        : 0;
 
     if (isOpWithFee(content)) {
       return {
