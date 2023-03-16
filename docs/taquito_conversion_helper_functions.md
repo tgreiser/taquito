@@ -12,7 +12,7 @@ current conversion helper functions:
 
 ## toForge
 
-`toForge` is a helper function that will return the correct structured params for the `forge` method from the returned `PreparedOperation` 
+`toForge` is a helper function that will return the structured params for the `forge` method
 
 it will take in the `PreparedOperation` and return the `ForgeParams`.
 
@@ -26,7 +26,7 @@ it will take in the `PreparedOperation` and return the `ForgeParams`.
 
 ## toDryRun
 
-`toDryRun` is a helper function that will return the correct structured params for the `preapplyOperation` method from the `PreparepOperation` and sign bytes `prefixSig`
+`toDryRun` is a helper function that will return the correct structured params for the `preapplyOperation` method
 
 it will take in the `PreparedOperation` and the `signOp` from the signed operation and return the `PreapplyOperationParams`
 
