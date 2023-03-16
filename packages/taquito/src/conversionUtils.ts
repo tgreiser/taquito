@@ -10,7 +10,12 @@ export function toForge({ opOb: { contents, branch } }: PreparedOperation): Forg
 
 export const toDryRun = (
   { opOb: { contents, branch, protocol } }: PreparedOperation,
-  prefixSig: string
+  sig: {
+    bytes: string;
+    sig: string;
+    prefixSig: string;
+    sbytes: string;
+  }
 ) => {
-  return [{ contents, branch, protocol, signature: prefixSig }];
+  return [{ contents, branch, protocol, signature: sig.prefixSig }];
 };

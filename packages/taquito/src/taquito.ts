@@ -69,7 +69,7 @@ export { RpcReadAdapter } from './read-provider/rpc-read-adapter';
 export * from './estimate';
 export { TaquitoLocalForger } from './forger/taquito-local-forger';
 export * from './prepare';
-export * from './commonUtils';
+export * from './conversionUtils';
 
 export interface SetProviderOptions {
   forger?: Forger;

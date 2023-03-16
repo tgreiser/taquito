@@ -28,7 +28,7 @@ it will take in the `PreparedOperation` and return the `ForgeParams`.
 
 `toDryRun` is a helper function that will return the correct structured params for the `preapplyOperation` method from the `PreparepOperation` and sign bytes `prefixSig`
 
-it will take in the `PreparedOperation` and the `prefixSig` of the signed forged bytes and return the `PreapplyOperationParams`
+it will take in the `PreparedOperation` and the `signOp` from the signed operation and return the `PreapplyOperationParams`
 
 ### Example 
 
@@ -38,7 +38,7 @@ it will take in the `PreparedOperation` and the `prefixSig` of the signed forged
   const forgedBytes = await forger.forge(toForge(preparedTransfer))
   const signOp = await Tezos.signer.sign(forgedBytes, new Uint8Array([3]));
 
-  const preapply = await Tezos.rpc.preapplyOperations(toDryRun(preparedTransfer, signOp.prefixSig))
+  const preapply = await Tezos.rpc.preapplyOperations(toDryRun(preparedTransfer, signOp))
 ```
 
 
