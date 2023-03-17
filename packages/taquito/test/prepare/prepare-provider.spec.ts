@@ -5,6 +5,7 @@ import { preparedOriginationOpWithReveal, preparedOriginationOpNoReveal } from '
 import { Estimate } from '../../src/estimate';
 
 import { TransferTicketParams, OpKind } from '../../src/operations/types';
+import { preparedTransactionMock } from '../helpers';
 
 describe('PrepareProvider test', () => {
   let prepareProvider: PrepareProvider;
@@ -35,6 +36,7 @@ describe('PrepareProvider test', () => {
   let mockSigner: {
     publicKeyHash: jest.Mock<any, any>;
     publicKey: jest.Mock<any, any>;
+    sign: jest.Mock<any, any>;
   };
 
   let estimate: Estimate;
@@ -67,6 +69,7 @@ describe('PrepareProvider test', () => {
     mockSigner = {
       publicKeyHash: jest.fn(),
       publicKey: jest.fn(),
+      sign: jest.fn(),
     };
 
     mockRpcClient.getContract.mockResolvedValue({
@@ -1067,6 +1070,30 @@ describe('PrepareProvider test', () => {
         },
         counter: 0,
       });
+    });
+
+    it('toPreapplyParams should forge, sign forged bytes and return the PreapplyParams object', async () => {
+      mockReadProvider.isAccountRevealed.mockResolvedValue(true);
+      mockSigner.sign.mockResolvedValue({
+        sig: '',
+        bytes: '',
+        prefixSig:
+          'spsig18HJsGY8pVAeHNHE7hURPsFfkGGBuH7cVifwabCAby2iN5R5ckNUqWfPBr8KxwUMJfrug1DZS1fjGzyemWDgukbAeRpwUe',
+        sbytes: '',
+      });
+
+      const { contents, branch, protocol } = preparedTransactionMock.opOb;
+
+      const result = await prepareProvider.toPreapplyParams(preparedTransactionMock);
+      expect(result).toEqual([
+        {
+          contents,
+          branch,
+          protocol,
+          signature:
+            'spsig18HJsGY8pVAeHNHE7hURPsFfkGGBuH7cVifwabCAby2iN5R5ckNUqWfPBr8KxwUMJfrug1DZS1fjGzyemWDgukbAeRpwUe',
+        },
+      ]);
     });
   });
 });

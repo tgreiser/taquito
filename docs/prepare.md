@@ -86,3 +86,13 @@ const contractAbs = await Tezos.contract.at(contractAddress);
 const method = await contractAbs.methods.increment(1);
 const prepared = await Tezos.prepare.contractCall(method);
 ```
+
+### preparing preapplyParams
+Users are able to utilize the `PrepareProvider` to modify the results of a `PreparedOperation` to the `PreapplyParams` for the `preapplyOperation` method
+```typescript
+// prepared transfer of tez from one account to another
+//omitted previous setupts for brevity
+const preparedTransfer = await Tezos.prepare.transaction({ amount: 1, to: pkhOfReceiver  });
+const preapplyParams = await Tezos.prepare.toPreapplyParams(preparedTransfer)
+const preapply = await Tezos.rpc.preapplyOperations(preapplyParams);
+```

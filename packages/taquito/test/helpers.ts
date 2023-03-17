@@ -12,6 +12,7 @@ import {
   OperationContentsAndResultIncreasePaidStorage,
   OperationContentsAndResultUpdateConsensusKey,
 } from '@taquito/rpc';
+import { PreparedOperation } from '../src/prepare';
 
 const defaultTransferData = {
   kind: OpKind.TRANSACTION as OpKind.TRANSACTION,
@@ -695,4 +696,4 @@ export const preparedTransactionMock = {
     ],
     protocol: 'PtMumbai2TmsJHNGRkD8v8YDbtao7BLUC3wjASn1inAKLFCjaH1',
   },
-};
+} as PreparedOperation;

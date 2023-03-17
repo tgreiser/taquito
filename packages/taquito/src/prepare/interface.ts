@@ -1,4 +1,4 @@
-import { OperationContents } from '@taquito/rpc';
+import { OperationContents, PreapplyParams } from '@taquito/rpc';
 import {
   BallotParams,
   DelegateParams,
@@ -148,6 +148,14 @@ export interface PreparationProvider {
   contractCall(
     contractMethod: ContractMethod<ContractProvider> | ContractMethodObject<ContractProvider>
   ): Promise<PreparedOperation>;
+
+  /**
+   *
+   * @description Method to covert a PreparedOperation return to PreapplyParams
+   * @param prepared result of the prepared operation
+   * @returns a PreapplyParams object
+   */
+  toPreapplyParams(prepared: PreparedOperation): Promise<PreapplyParams>;
 }
 
 export interface PreparedOperation {

@@ -1,5 +1,5 @@
 import { LocalForger } from "@taquito/local-forging";
-import { toDryRun, toForge } from "@taquito/taquito";
+import { toForge } from "@taquito/taquito";
 import { CONFIGS } from "./config";
 
 
@@ -19,10 +19,9 @@ CONFIGS().forEach(({ lib, setup, createAddress }) => {
       const pkh = await reciever.signer.publicKeyHash();
       const preparedTransfer = await Tezos.prepare.transaction({ amount: 1, to: pkh });
 
-      const forged = await forger.forge(toForge(preparedTransfer));
-      const signOp = await Tezos.signer.sign(forged, new Uint8Array([3]));
+      const preapplyParams = await Tezos.prepare.toPreapplyParams(preparedTransfer)
 
-      const preapply = await Tezos.rpc.preapplyOperations(toDryRun(preparedTransfer, signOp));
+      const preapply = await Tezos.rpc.preapplyOperations(preapplyParams);
 
       if (preapply[0].contents[0].kind === 'reveal') {
         expect(preapply[0].contents[0].kind).toEqual('reveal');
